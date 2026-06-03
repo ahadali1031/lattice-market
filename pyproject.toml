@@ -1,0 +1,55 @@
+[project]
+name = "lattice"
+version = "0.1.0"
+description = "A quant data + backtesting platform: point-in-time data store and event-driven backtesting engine."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "polars>=1.0",     # fast dataframe library for all data transforms
+    "pyarrow>=16.0",   # Parquet read/write engine (used under the hood)
+    "yfinance>=0.2.40", # Stage 0 data source, walled behind data/sources/
+    "matplotlib>=3.8", # plotting the equity curve
+]
+
+# Dev-only tools. These are NOT installed when someone just uses the package;
+# they are for us while building. (PEP 735 dependency groups, understood by uv.)
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.6",
+    "mypy>=1.11",
+]
+
+# --- Build system: how the package gets built/installed ---
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/lattice"]
+
+# --- Ruff: linter + formatter (replaces black, flake8, isort) ---
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+# A pragmatic, not-overwhelming rule set:
+# E/W = style errors, F = real bugs (unused vars, etc.), I = import sorting,
+# UP = modernize syntax, B = common bug patterns, SIM = simplifications.
+select = ["E", "W", "F", "I", "UP", "B", "SIM"]
+
+# --- Mypy: static type checker, strict mode (your call: full rigor) ---
+[tool.mypy]
+python_version = "3.12"
+strict = true
+files = ["src", "tests"]
+# yfinance ships no type information; silence "missing stubs" just for it.
+[[tool.mypy.overrides]]
+module = ["yfinance.*"]
+ignore_missing_imports = true
+
+# --- Pytest: where tests live ---
+[tool.pytest.ini_options]
+testpaths = ["tests"]
