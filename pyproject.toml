@@ -8,6 +8,7 @@ dependencies = [
     "polars>=1.0",     # fast dataframe library for all data transforms
     "pyarrow>=16.0",   # Parquet read/write engine (used under the hood)
     "yfinance>=0.2.40", # Stage 0 data source, walled behind data/sources/
+    "pandas>=2.0",     # yfinance hands back pandas; we touch it only in the adapter
     "matplotlib>=3.8", # plotting the equity curve
 ]
 
@@ -18,6 +19,7 @@ dev = [
     "pytest>=8.0",
     "ruff>=0.6",
     "mypy>=1.11",
+    "pandas-stubs>=2.0",  # type stubs so mypy --strict understands our pandas use
 ]
 
 # --- Build system: how the package gets built/installed ---
