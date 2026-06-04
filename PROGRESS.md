@@ -29,8 +29,10 @@ One thin vertical slice through every layer, end to end.
 - [x] **Parquet store** (`data/store.py`) — write/read Hive-partitioned Parquet
       (`symbol=XXX/`); dumb byte IO, no notion of "as of T". Overwrite-per-symbol
       for Stage 0; round-trip / overwrite / filter / empty all tested.
-- [ ] **Point-in-time accessor** (`data/accessor.py`) — THE core piece; returns
-      only data visible as of date T. *Ahad to drive.*
+- [x] **Point-in-time accessor** (`data/accessor.py`) — THE core piece: a
+      forward-only cursor with no verb to reach the future. `history()` filters
+      `date <= current_date`; `advance()` only moves forward. *history() and
+      advance() written by Ahad.*
 - [ ] **Event loop** (`engine/`) — Market → Signal → Order → Fill, forward-only.
 - [ ] **Strategy interface** + moving-average crossover reference strategy.
 - [ ] **Simulated broker** — flat commission + simple slippage, next-open fills.

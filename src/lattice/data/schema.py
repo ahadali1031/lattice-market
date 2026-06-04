@@ -60,11 +60,7 @@ SCHEMA: pl.Schema = pl.Schema(
     }
 )
 
-# The canonical write order, so Parquet files are stable and diffs stay sane.
 COLUMNS: list[str] = list(SCHEMA.keys())
-
-# Price columns share their validation rule (must be finite and > 0). Kept in
-# one place so Stage 1's data-quality checks have a single source of truth.
 PRICE_COLUMNS: list[str] = [OPEN, HIGH, LOW, CLOSE, ADJ_CLOSE]
 
 
@@ -86,11 +82,6 @@ def enforce(frame: pl.DataFrame) -> pl.DataFrame:
     unexpected = received - required
     if unexpected:
         raise ValueError(f"frame has unexpected columns: {sorted(unexpected)}")
-
-    # Each column becomes an expression so it can be cast; iterating SCHEMA keeps
-    # the dtypes defined in one place and fixes the output order. strict=True
-    # makes an uncastable value (e.g. "abc" -> Float64) raise instead of becoming
-    # a silent null — the fail-loud rule in one keyword.
     return frame.select(
         pl.col(name).cast(dtype, strict=True) for name, dtype in SCHEMA.items()
     )
