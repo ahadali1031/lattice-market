@@ -47,9 +47,9 @@ select = ["E", "W", "F", "I", "UP", "B", "SIM"]
 python_version = "3.12"
 strict = true
 files = ["src", "tests"]
-# yfinance ships no type information; silence "missing stubs" just for it.
+# yfinance and matplotlib ship no usable type stubs; silence "missing stubs".
 [[tool.mypy.overrides]]
-module = ["yfinance.*"]
+module = ["yfinance.*", "matplotlib.*"]
 ignore_missing_imports = true
 
 # --- Pytest: where tests live ---

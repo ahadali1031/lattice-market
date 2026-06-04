@@ -45,13 +45,19 @@ One thin vertical slice through every layer, end to end.
       adversarial slippage (buy up, sell down) and 1%-of-value commission.
       Pure: order + fill date + open price in, FillEvent out. *fill() written by Ahad.*
       Portfolio gained a `cash_buffer` (default 2%) so sizing leaves room for costs.
-- [ ] **Metrics** (`metrics/`) — total return, Sharpe, max drawdown + equity-curve plot.
 - [x] **Event loop** (`engine/loop.py`) — Backtest drives accessor → strategy →
       portfolio → broker forward one day at a time. Daily order: fill yesterday's
       orders at today's open → mark to market → ask strategy → size & queue for
       tomorrow → advance. The decide-today/fill-tomorrow gap is the no-look-ahead
       guarantee. Returns a (date, equity) curve. *run() written by Ahad.*
-- [ ] **End-to-end script** (`scripts/`) — fetch ~10 equities → store → backtest → plot.
+- [x] **Metrics** (`metrics/`) — total return, Sharpe, max drawdown (`performance.py`)
+      + matplotlib equity-curve plot (`plotting.py`). Plumbing (Claude).
+- [x] **End-to-end script** (`scripts/run_stage0.py`) — fetch ~10 equities → store
+      → point-in-time backtest → metrics + plot. Plumbing (Claude).
+
+**Stage 0 COMPLETE.** First real run: MA crossover 20/50, 10 large-cap US equities,
+2018-2023, 1% commission. Total return +36.81%, Sharpe 0.43, max drawdown -30.23%.
+Flat warmup until the slow MA is defined confirms the no-look-ahead discipline.
 
 ## Stage 1 — harden the data layer (NOT STARTED)
 Idempotent ingestion, point-in-time correctness, corporate actions, survivorship,

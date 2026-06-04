@@ -18,3 +18,6 @@ data/ohlcv/*
 
 # --- Claude Code local files ---
 .claude/
+
+# Generated reports/plots
+/reports/
