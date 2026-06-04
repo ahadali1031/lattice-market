@@ -8,6 +8,10 @@ Sizing rule (Stage 0, equal-weight): a fresh long position targets 1/N of total
 equity (N = size of the universe), bought at the latest price; an exit sells the
 whole position. We size at entry and do not continuously rebalance — that is a
 later-stage refinement.
+
+A small ``cash_buffer`` shrinks each target slightly so there is headroom for the
+commission and slippage the broker charges; without it, a fully-invested
+portfolio would overspend by ~1% and run a negative cash balance.
 """
 
 from __future__ import annotations
@@ -18,11 +22,19 @@ from lattice.engine.events import FillEvent, OrderEvent, Side, SignalEvent, Sign
 class Portfolio:
     """Tracks cash and holdings, sizes orders, and applies fills."""
 
-    def __init__(self, symbols: list[str], starting_cash: float = 100_000.0) -> None:
+    def __init__(
+        self,
+        symbols: list[str],
+        starting_cash: float = 100_000.0,
+        cash_buffer: float = 0.02,
+    ) -> None:
         if not symbols:
             raise ValueError("portfolio needs a non-empty universe of symbols")
+        if not 0.0 <= cash_buffer < 1.0:
+            raise ValueError("cash_buffer must be in [0, 1)")
         self._n = len(symbols)
         self._cash = starting_cash
+        self._cash_buffer = cash_buffer
         # Every symbol starts flat (zero shares).
         self._holdings: dict[str, int] = {symbol: 0 for symbol in symbols}
 
@@ -68,7 +80,8 @@ class Portfolio:
 
         If the signal is LONG:
           - if already holding (held > 0): return None (hold — no new trade)
-          - else size a fresh position: target value = equity / self._n, and the
+          - else size a fresh position: target value = equity / self._n, scaled
+            down by the buffer, i.e. multiplied by (1 - self._cash_buffer); the
             share count is that value divided by ``price``, floored to a whole
             number (hint: int(value // price))
           - if that share count is 0 or less, return None (can't afford one share)
@@ -82,7 +95,7 @@ class Portfolio:
         if signal.signal is SignalType.LONG:
             if self.shares(signal.symbol) > 0:
                 return None
-            share_count = int((equity / self._n) // price)
+            share_count = int((equity / self._n * (1 - self._cash_buffer)) // price)
             if share_count <= 0:
                 return None
             return OrderEvent(signal.date, signal.symbol, Side.BUY, share_count)

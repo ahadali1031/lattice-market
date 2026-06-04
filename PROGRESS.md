@@ -41,7 +41,10 @@ One thin vertical slice through every layer, end to end.
 - [x] **Portfolio** (`engine/portfolio.py`) — cash + holdings, equal-weight
       sizing (1/N of equity, sized at entry), fills update cash/holdings.
       *apply_fill() and target_order() written by Ahad.*
-- [ ] **Simulated broker** — flat commission + simple slippage, next-open fills.
+- [x] **Simulated broker** (`engine/broker.py`) — fills at next open with
+      adversarial slippage (buy up, sell down) and 1%-of-value commission.
+      Pure: order + fill date + open price in, FillEvent out. *fill() written by Ahad.*
+      Portfolio gained a `cash_buffer` (default 2%) so sizing leaves room for costs.
 - [ ] **Metrics** (`metrics/`) — total return, Sharpe, max drawdown + equity-curve plot.
 - [ ] **End-to-end script** (`scripts/`) — fetch ~10 equities → store → backtest → plot.
 

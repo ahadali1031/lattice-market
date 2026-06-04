@@ -10,7 +10,8 @@ _DAY = dt.date(2020, 1, 6)
 
 def _portfolio() -> Portfolio:
     # Two symbols -> N=2, so each long position targets half of equity.
-    return Portfolio(["AAPL", "MSFT"], starting_cash=100_000.0)
+    # cash_buffer=0.0 keeps the sizing math clean for these tests.
+    return Portfolio(["AAPL", "MSFT"], starting_cash=100_000.0, cash_buffer=0.0)
 
 
 def test_starts_with_equity_equal_to_cash() -> None:
@@ -27,6 +28,16 @@ def test_long_when_flat_sizes_to_half_equity() -> None:
     assert order is not None
     assert order.side is Side.BUY
     assert order.quantity == 500  # 50_000 target / 100 price
+
+
+def test_buffer_shrinks_position_size() -> None:
+    # With a 2% buffer, the $50,000 target becomes $49,000 -> 490 shares @ $100.
+    p = Portfolio(["AAPL", "MSFT"], starting_cash=100_000.0, cash_buffer=0.02)
+    order = p.target_order(
+        SignalEvent(_DAY, "AAPL", SignalType.LONG), price=100.0, equity=100_000.0
+    )
+    assert order is not None
+    assert order.quantity == 490
 
 
 def test_long_when_already_long_holds() -> None:
