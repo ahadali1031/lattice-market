@@ -15,10 +15,27 @@ Lattice where the time boundary is enforced.
 from __future__ import annotations
 
 import datetime as dt
+from typing import Protocol, runtime_checkable
 
 import polars as pl
 
 from lattice.data import schema
+
+
+@runtime_checkable
+class MarketView(Protocol):
+    """The read-only face of the accessor that a strategy is allowed to see.
+
+    Deliberately exposes only ``current_date`` and ``history`` — NOT ``advance``.
+    A strategy typed against ``MarketView`` therefore cannot move time, so it
+    cannot trick the accessor into revealing the future. Only the loop, holding
+    the full ``PointInTimeAccessor``, is allowed to advance the clock.
+    """
+
+    @property
+    def current_date(self) -> dt.date: ...
+
+    def history(self, symbol: str) -> pl.DataFrame: ...
 
 
 class PointInTimeAccessor:

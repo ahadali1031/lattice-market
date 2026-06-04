@@ -34,7 +34,10 @@ One thin vertical slice through every layer, end to end.
       `date <= current_date`; `advance()` only moves forward. *history() and
       advance() written by Ahad.*
 - [ ] **Event loop** (`engine/`) — Market → Signal → Order → Fill, forward-only.
-- [ ] **Strategy interface** + moving-average crossover reference strategy.
+- [x] **Strategy interface** + moving-average crossover (`engine/strategy.py`).
+      Strategy gets a read-only `MarketView` (no `advance()`), so it cannot peek.
+      Emits desired exposure (LONG/EXIT) each day; portfolio turns *changes* into
+      trades. *generate_signals() written by Ahad.*
 - [ ] **Simulated broker** — flat commission + simple slippage, next-open fills.
 - [ ] **Portfolio** — cash + holdings accounting.
 - [ ] **Metrics** (`metrics/`) — total return, Sharpe, max drawdown + equity-curve plot.
