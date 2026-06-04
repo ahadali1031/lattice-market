@@ -46,6 +46,11 @@ One thin vertical slice through every layer, end to end.
       Pure: order + fill date + open price in, FillEvent out. *fill() written by Ahad.*
       Portfolio gained a `cash_buffer` (default 2%) so sizing leaves room for costs.
 - [ ] **Metrics** (`metrics/`) — total return, Sharpe, max drawdown + equity-curve plot.
+- [x] **Event loop** (`engine/loop.py`) — Backtest drives accessor → strategy →
+      portfolio → broker forward one day at a time. Daily order: fill yesterday's
+      orders at today's open → mark to market → ask strategy → size & queue for
+      tomorrow → advance. The decide-today/fill-tomorrow gap is the no-look-ahead
+      guarantee. Returns a (date, equity) curve. *run() written by Ahad.*
 - [ ] **End-to-end script** (`scripts/`) — fetch ~10 equities → store → backtest → plot.
 
 ## Stage 1 — harden the data layer (NOT STARTED)
