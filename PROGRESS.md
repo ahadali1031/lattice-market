@@ -38,8 +38,10 @@ One thin vertical slice through every layer, end to end.
       Strategy gets a read-only `MarketView` (no `advance()`), so it cannot peek.
       Emits desired exposure (LONG/EXIT) each day; portfolio turns *changes* into
       trades. *generate_signals() written by Ahad.*
+- [x] **Portfolio** (`engine/portfolio.py`) — cash + holdings, equal-weight
+      sizing (1/N of equity, sized at entry), fills update cash/holdings.
+      *apply_fill() and target_order() written by Ahad.*
 - [ ] **Simulated broker** — flat commission + simple slippage, next-open fills.
-- [ ] **Portfolio** — cash + holdings accounting.
 - [ ] **Metrics** (`metrics/`) — total return, Sharpe, max drawdown + equity-curve plot.
 - [ ] **End-to-end script** (`scripts/`) — fetch ~10 equities → store → backtest → plot.
 
